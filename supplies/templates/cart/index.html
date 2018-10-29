@@ -1,0 +1,71 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<main class="mdl-layout__content">
+    <div class="page-content">
+        <div class="mdl-grid">
+            <div class="mdl-cell mdl-cell--6-col">
+                <div class="mdl-cell mdl-color-text--grey-500">
+                Home &gt; Supplies &gt; Cart
+                </div>
+                <h5>
+                Cart
+                </h5>
+            </div>
+            <div class="mdl-cell mdl-cell--6-col" align="right" style="margin: auto">
+                <button id="checkout" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">
+                Checkout
+                </button>
+            </div>
+        </div>
+        <div class="mdl-grid">
+            <div class="mdl-cell mdl-cell--12-col" align="center" style="padding: 5px">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <select class="mdl-textfield__input" id="select_priority" name="priority">
+                    <option value=1>Low</option>
+                    <option value=2 selected>Medium</option>
+                    <option value=3>High</option>
+                </select>
+                <label class="mdl-textfield__label" for="priority">Priority</label>
+                </div>
+            </div>
+        </div>
+        <div class="mdl-grid">
+            <div class="mdl-cell mdl-cell--12-col" align="center">
+            <table width="100%" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                <thead>
+                <tr>
+                    <th style="text-align:left;">Image</th>
+                    <th style="text-align:left;">Description</th>
+                    <th>Category</th>
+                    <th>Qty</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if cart_items %}
+                {% for item in cart_items %}
+                <tr>
+                    <td class="item-id" style="display:none;">{{ item.item.id }}</td>
+                    <td style="text-align:center;"><img src="https://starkmans.com/pub/media/catalog/product/cache/image/1000x1320/e9c3970ab036de70892d86c6d221abfe/j/b/jb1324.jpg" height=100 /></td>
+                    <td class="mdl-data-table__cell--non-numeric">{{ item.item.description }}</td>
+                    <td>{{ item.item.category.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+      $('#checkout').on('click', function() {
+        const priority = $("#select_priority").val();
+        console.log(priority);
+        $.post("/supplies/checkout", { csrfmiddlewaretoken: '{{ csrf_token }}', "priority": priority }, function( response ) {
+          alert(response);
+        });
+        });
+    </script>
+{% endblock %}

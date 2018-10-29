@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from home.models import Category, Item
+from home.models import Clinic, Category, Item, Order, OrderItem
 
 import json
 
@@ -36,3 +36,43 @@ def add_to_cart(request):
 def flush_session(request):
     request.session.flush()
     return HttpResponse("Session flushed.")
+
+def cart(request):
+    if "cart" not in request.session:
+        request.session["cart"] = {
+            "items": {}
+        }
+    cart_items = []
+    for item in request.session["cart"]["items"]:
+        cart_items.append({
+            "item": Item.objects.get(pk=item),
+            "quantity": request.session["cart"]["items"][item]
+        })
+    context = {
+        'cart_items': cart_items
+    }
+    return render(request, 'cart/index.html', context)
+
+def checkout(request):
+    if request.method == 'POST':
+        if "cart" not in request.session:
+            request.session["cart"] = {
+                "items": {}
+            }
+            return HttpResponse("No items in cart.")
+        new_order = Order()
+        new_order.status = 1
+        new_order.priority = request.POST.get('priority')
+        new_order.clinic = Clinic.objects.first()
+        new_order.save()
+        cart_items = []
+        for item in request.session["cart"]["items"]:
+            oi = OrderItem(order=new_order, item=Item.objects.get(pk=item), quantity=request.session["cart"]["items"][item])
+            oi.save()
+        request.session["cart"] = {
+            "items": {}
+        }
+        return HttpResponse("Successfully created order.")
+
+    
+

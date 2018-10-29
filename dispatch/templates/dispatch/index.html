@@ -1,0 +1,45 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<main class="mdl-layout__content">
+  <div class="page-content">
+    <div class="mdl-grid">
+        <div class="mdl-cell mdl-cell--6-col">
+            <div class="mdl-cell mdl-color-text--grey-500">
+            Home &gt; Dispatch
+            </div>
+            <h5>
+            Dispatch
+            </h5>
+        </div>
+        <div class="mdl-cell mdl-cell--6-col" align="right" style="margin: auto">
+            <button id="dispatched" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">
+            Dispatched
+            </button>
+        </div>
+    </div>
+    <div class="mdl-grid">
+      <div class="mdl-cell mdl-cell--12-col" align="center">
+        <table width="100%" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+          <thead>
+            <tr>
+              <th class="mdl-data-table__cell--non-numeric">Order Id</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if items %}
+            {% for item in items %}
+            <tr>
+              <td>{{ item.id }}</td>
+              <td>{{ item.get_status_display }}</td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
