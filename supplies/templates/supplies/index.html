@@ -21,9 +21,14 @@
     <div class="mdl-grid">
       <div class="mdl-cell mdl-cell--12-col" align="center" style="padding: 5px">
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-          <select class="mdl-textfield__input" id="category" name="category">
-            <option></option>
-            <option value="Intravenous (IV) Fluid">Intravenous (IV) Fluid</option>
+          <select class="mdl-textfield__input" id="select_category" name="category">
+            {% if categories %}
+            {% for category in categories %}
+              <option value={{ category.id }} {% if category.id == category_id %} selected {% endif %}>{{ category.name }}</option>
+            {% endfor %}
+            {% else %}
+              <option></option>
+            {% endif %}
           </select>
           <label class="mdl-textfield__label" for="octane">Category</label>
         </div>
@@ -43,25 +48,52 @@
             </tr>
           </thead>
           <tbody>
-            {% if supplies_list %}
-            {% for supply in supplies_list %}
+            {% if items %}
+            {% for item in items %}
             <tr>
-              <td class="mdl-data-table__cell--non-numeric">{{ supply.description }}</td>
-              <td>{{ supply.category.name }}</td>
+              <td class="item-id" style="display:none;">{{ item.id }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ item.description }}</td>
+              <td>{{ item.category.name }}</td>
               <td><img src="https://starkmans.com/pub/media/catalog/product/cache/image/1000x1320/e9c3970ab036de70892d86c6d221abfe/j/b/jb1324.jpg" height=100 /></td>
-              <td><button class="mdl-button mdl-js-button mdl-button--raised">View Details</button></td>
+              <td><button type="button" class="mdl-button mdl-js-button mdl-button--raised" data-toggle="modal" data-target="#exampleModal">View Details</button>
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">Additional Details</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                            <ul style="list-style-type:none">
+                                <li>Shipping weight: {{item.shipping_weight_grams}}</li>
+                                <li>Category: {{item.category.name}}</li>
+                                <li>Warehouse: {{item.warehouse.name}}</li>
+                                <li>Description: {{item.description}}</li>
+                            </ul>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          <button type="button" class="btn btn-primary">Save changes</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              </td>              
               <td>
                 <div class="mdl-textfield mdl-js-textfield" style="width: 100px;">
-                  <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="qty1">
+                  <input class="quantity mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="qty1">
                   <label class="mdl-textfield__label" for="qty1">Qty...</label>
                 </div>
               </td>
               <td>
-                <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
+                <button class="add-cart mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
                   Add to Cart
                 </button>
               </td>
             </tr>
+            
             {% endfor %}
             {% endif %}
           </tbody>
@@ -70,5 +102,27 @@
     </div>
   </div>
 </main>
-</div>
+<script>
+	$('#select_category').on('change', function() {
+    var loc = location.href;
+    if (loc.indexOf("?") !== -1) {
+      loc = loc.slice(0, loc.indexOf("?"))
+    }
+    loc += "?category_id=" + $(this).val();
+    window.location = loc;
+		return false;
+  });
+  
+  $('.add-cart').on('click', function() {
+    var loc = location.href;
+    if (loc.indexOf("?") !== -1) {
+      loc = loc.slice(0, loc.indexOf("?"))
+    }
+    const itemID = $(this).parent().parent().find(".item-id").text();
+    const quantity = $(this).parent().parent().find(".quantity").val();
+    $.post( loc, { csrfmiddlewaretoken: '{{ csrf_token }}', "itemID": itemID, "quantity": quantity }, function( data ) {
+      console.log('Added to cart successfully');
+    });
+	});
+</script>
 {% endblock %}
