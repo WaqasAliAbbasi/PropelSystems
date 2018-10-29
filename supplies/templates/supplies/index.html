@@ -1,0 +1,74 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<main class="mdl-layout__content">
+  <div class="page-content">
+    <div class="mdl-grid">
+      <div class="mdl-cell mdl-cell--6-col">
+        <div class="mdl-cell mdl-color-text--grey-500">
+          Home &gt; Supplies
+        </div>
+        <h5>
+          Supplies
+        </h5>
+      </div>
+      <div class="mdl-cell mdl-cell--6-col" align="right" style="margin: auto">
+        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">
+          View Cart & Checkout
+        </button>
+      </div>
+    </div>
+    <div class="mdl-grid">
+      <div class="mdl-cell mdl-cell--12-col" align="center" style="padding: 5px">
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+          <select class="mdl-textfield__input" id="category" name="category">
+            <option></option>
+            <option value="Intravenous (IV) Fluid">Intravenous (IV) Fluid</option>
+          </select>
+          <label class="mdl-textfield__label" for="octane">Category</label>
+        </div>
+      </div>
+    </div>
+    <div class="mdl-grid">
+      <div class="mdl-cell mdl-cell--12-col" align="center">
+        <table width="100%" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+          <thead>
+            <tr>
+              <th class="mdl-data-table__cell--non-numeric">Description</th>
+              <th>Category</th>
+              <th>Image</th>
+              <th>Details</th>
+              <th>Qty</th>
+              <th>Add to Cart</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if supplies_list %}
+            {% for supply in supplies_list %}
+            <tr>
+              <td class="mdl-data-table__cell--non-numeric">{{ supply.description }}</td>
+              <td>{{ supply.category.name }}</td>
+              <td><img src="https://starkmans.com/pub/media/catalog/product/cache/image/1000x1320/e9c3970ab036de70892d86c6d221abfe/j/b/jb1324.jpg" height=100 /></td>
+              <td><button class="mdl-button mdl-js-button mdl-button--raised">View Details</button></td>
+              <td>
+                <div class="mdl-textfield mdl-js-textfield" style="width: 100px;">
+                  <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="qty1">
+                  <label class="mdl-textfield__label" for="qty1">Qty...</label>
+                </div>
+              </td>
+              <td>
+                <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
+                  Add to Cart
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+{% endblock %}
