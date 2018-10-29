@@ -22,6 +22,7 @@ class Order(models.Model):
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE)
     time_placed = models.DateTimeField(auto_now_add=True, blank=True)
     
+    
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
