@@ -80,7 +80,7 @@
                       </div>
                     </div>
                   </div>
-              </td>              
+              </td>
               <td>
                 <div class="mdl-textfield mdl-js-textfield" style="width: 100px;">
                   <input class="quantity mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="qty1">
@@ -93,7 +93,7 @@
                 </button>
               </td>
             </tr>
-            
+
             {% endfor %}
             {% endif %}
           </tbody>
@@ -112,16 +112,16 @@
     window.location = loc;
 		return false;
   });
-  
+
   $('.add-cart').on('click', function() {
-    var loc = location.href;
-    if (loc.indexOf("?") !== -1) {
-      loc = loc.slice(0, loc.indexOf("?"))
+    var url = location.href;
+    if (url.indexOf("?") !== -1) {
+      url = url.slice(0, url.indexOf("?"))
     }
     const itemID = $(this).parent().parent().find(".item-id").text();
     const quantity = $(this).parent().parent().find(".quantity").val();
-    $.post( loc, { csrfmiddlewaretoken: '{{ csrf_token }}', "itemID": itemID, "quantity": quantity }, function( data ) {
-      console.log('Added to cart successfully');
+    $.post( url + 'add_to_cart', { csrfmiddlewaretoken: '{{ csrf_token }}', "itemID": itemID, "quantity": quantity }, function( response ) {
+      alert(response);
     });
 	});
 </script>
