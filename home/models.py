@@ -2,6 +2,9 @@ from django.db import models
 
 class Warehouse(models.Model):
     name = models.CharField(max_length=200)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    altitude_meters = models.PositiveIntegerField()
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
