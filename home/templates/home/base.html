@@ -1,4 +1,4 @@
-{% load static from staticfiles %}
+{% load static %}
 
 <!doctype html>
 <html class="no-js" lang="">
@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
   <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+  <link rel="stylesheet" href="https://storage.googleapis.com/non-spec-apps/mio-icons/latest/outline.css">
   <link rel="stylesheet" href="{% static "css/normalize.css" %}">
   <link rel="stylesheet" href="{% static "css/main.css" %}">
 </head>
@@ -40,11 +41,17 @@
         <!-- Add spacer, to align navigation to the right -->
         <div class="mdl-layout-spacer"></div>
         <span class="mdl-layout-title">
-          Southern Clinic
+          {% if location %}
+            {{ location }}
+          {% endif %}
         </span>
         <div class="mdl-layout-spacer"></div>
         <span class="mdl-layout-title">
-          John Doe (Clinic Manager)
+          {% if role %}
+            John Doe ({{ role }})
+          {% else %}
+            John Doe
+          {% endif %}
         </span>
         <!-- Navigation -->
         <nav class="mdl-navigation">

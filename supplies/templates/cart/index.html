@@ -46,7 +46,7 @@
                 {% for item in cart_items %}
                 <tr>
                     <td class="item-id" style="display:none;">{{ item.item.id }}</td>
-                    <td style="text-align:center;"><img src="https://starkmans.com/pub/media/catalog/product/cache/image/1000x1320/e9c3970ab036de70892d86c6d221abfe/j/b/jb1324.jpg" height=100 /></td>
+                    <td style="text-align:center;"><img src={{ item.item.image.url }} height=100 /></td>
                     <td class="mdl-data-table__cell--non-numeric">{{ item.item.description }}</td>
                     <td>{{ item.item.category.name }}</td>
                     <td>{{ item.quantity }}</td>
