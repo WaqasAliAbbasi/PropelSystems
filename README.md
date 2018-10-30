@@ -17,6 +17,14 @@
   * Password: `123456`
 * When you are done, exit virtual environment by `exit`
 
+### How to test elaboration
+
+* Add supply items through [http://localhost:8000/admin/home/item/](http://localhost:8000/admin/home/item/)
+* Place any order through [http://127.0.0.1:8000/supplies](http://127.0.0.1:8000/supplies)
+* Order status is now `Queued for Processing` so it won't show up in [http://127.0.0.1:8000/dispatch](http://127.0.0.1:8000/dispatch)
+* Go to [http://localhost:8000/admin/home/order/](http://localhost:8000/admin/home/order/), find your order and change status to `Queued for Dispatch`
+* Download Itinerary or Dispatch Shipment through [http://127.0.0.1:8000/dispatch](http://127.0.0.1:8000/dispatch)
+
 ### How to change models
 
 * Change your models (in `models.py` of respective app).
