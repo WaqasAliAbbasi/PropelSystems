@@ -1,17 +1,17 @@
+import csv
 from django.shortcuts import render
 from django.http import HttpResponse
-
 from home.models import Order
 
-# Create your views here.
-
-distancedict={
-    'Mui Wo Clinic': [('North Lamma Clinic',12.54), 
+DRONE_LOAD_CARRYING_CAPACITY = 25 * 1000
+ORDER_OVERHEAD_WEIGHT = 1.2 * 1000
+distance_dict={
+    'Mui Wo Clinic': [('North Lamma Clinic',12.54),
     ('Peng Chau Clinic',4.68),
-    ('Sok Kwu Wan Clinic', 15.32), 
-    ('Tai O Clinic', 14.44), 
-    ('Aberdeen Clinic', 16.41), 
-    ('Ap Lei Chau Clinic', 16.24), 
+    ('Sok Kwu Wan Clinic', 15.32),
+    ('Tai O Clinic', 14.44),
+    ('Aberdeen Clinic', 16.41),
+    ('Ap Lei Chau Clinic', 16.24),
     ('Queen Mary Hospital', 13.74)],
     'North Lamma Clinic':[('Peng Chau Clinic', 9.92),
     ('Sok Kwu Wan Clinic',2.96),
@@ -36,9 +36,45 @@ distancedict={
     'Ap Lei Chau Clinic':[('Queen Mary Hospital',3.79)]
 }
 
+def get_current_shipment():
+    orders = Order.objects.filter(status=Order.QUEUED_FOR_DISPATCH)
+    current_shipment = []
+    remaining_weight = DRONE_LOAD_CARRYING_CAPACITY
+    for order in orders:
+        order_weight = ORDER_OVERHEAD_WEIGHT
+        for order_item in order.orderitem_set.all():
+            order_weight += order_item.quantity * order_item.item.shipping_weight_grams
+        if order_weight < remaining_weight:
+            remaining_weight -= order_weight
+            current_shipment.append(order)
+        else:
+            break
+    return current_shipment
+
 def index(request):
-    orders = Order.objects.all()
+    current_shipment = get_current_shipment()
     context = {
-        'items': orders
+        'items': current_shipment
     }
     return render(request, 'dispatch/index.html', context)
+
+def dispatch_shipment(request):
+    if request.method == 'POST':
+        current_shipment = get_current_shipment()
+        for order in current_shipment:
+            order.status = Order.DISPATCHED
+            order.save()
+        return HttpResponse("Successfully dispatched shipments.")
+
+def get_itinerary(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment;'
+
+    writer = csv.writer(response)
+    writer.writerow(['Location', 'Latitude', 'Longitude', 'Altitude'])
+
+    current_shipment = get_current_shipment()
+    for order in current_shipment:
+        writer.writerow([order.clinic.name, order.clinic.latitude, order.clinic.longitude, order.clinic.altitude_meters])
+
+    return response

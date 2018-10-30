@@ -11,10 +11,16 @@
             <h5>
             Dispatch
             </h5>
+            <h6>
+            Orders for Current Shipment
+            </h6>
         </div>
         <div class="mdl-cell mdl-cell--6-col" align="right" style="margin: auto">
-            <button id="dispatched" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">
-            Dispatched
+            <button onclick="location.href='/dispatch/get_itinerary'" id="get-itinerary" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
+            Download Itinerary
+            </button>
+            <button id="dispatch-shipment" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">
+            Dispatch Shipment
             </button>
         </div>
     </div>
@@ -42,4 +48,12 @@
     </div>
   </div>
 </main>
+<script>
+  $('#dispatch-shipment').on('click', function() {
+    $.post("/dispatch/dispatch_shipment", { csrfmiddlewaretoken: '{{ csrf_token }}' }, function( response ) {
+      alert(response);
+      location.reload();
+    });
+  });
+</script>
 {% endblock %}

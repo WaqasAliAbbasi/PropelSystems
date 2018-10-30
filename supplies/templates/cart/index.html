@@ -60,12 +60,12 @@
     </div>
 </main>
 <script>
-      $('#checkout').on('click', function() {
-        const priority = $("#select_priority").val();
-        console.log(priority);
-        $.post("/supplies/checkout", { csrfmiddlewaretoken: '{{ csrf_token }}', "priority": priority }, function( response ) {
-          alert(response);
-        });
-        });
-    </script>
+  $('#checkout').on('click', function() {
+    const priority = $("#select_priority").val();
+    $.post("/supplies/checkout", { csrfmiddlewaretoken: '{{ csrf_token }}', "priority": priority }, function( response ) {
+      alert(response);
+      location.reload();
+    });
+    });
+</script>
 {% endblock %}

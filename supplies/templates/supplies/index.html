@@ -21,7 +21,7 @@
     <div class="mdl-grid">
       <div class="mdl-cell mdl-cell--12-col" align="center" style="padding: 5px">
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-          <select class="mdl-textfield__input" id="select_category" name="category">
+          <select class="mdl-textfield__input" id="select-category" name="category">
             {% if categories %}
             {% for category in categories %}
               <option value={{ category.id }} {% if category.id == category_id %} selected {% endif %}>{{ category.name }}</option>
@@ -102,6 +102,7 @@
   </div>
 </main>
 <script>
+  $('#select-category').on('change', function() {
     var loc = location.href;
     if (loc.indexOf("?") !== -1) {
       loc = loc.slice(0, loc.indexOf("?"))
