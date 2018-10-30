@@ -1,7 +1,9 @@
+import copy
 from django.shortcuts import render
 from django.http import HttpResponse
 
 from home.models import Clinic, Category, Item, Order, OrderItem
+from dispatch.views import DRONE_LOAD_CARRYING_CAPACITY, ORDER_OVERHEAD_WEIGHT
 
 import json
 
@@ -13,11 +15,19 @@ def index(request):
         category = Category.objects.first()
     items = Item.objects.filter(category=category)
     context = {
+        'location': Clinic.objects.first().name,
+        'role': "Clinic Manager",
         'category_id': category.id,
         'categories': Category.objects.all(),
         'items': items
     }
     return render(request, 'supplies/index.html', context)
+
+def get_cart_weight(items):
+    cart_weight = ORDER_OVERHEAD_WEIGHT
+    for item in items:
+        cart_weight += Item.objects.get(pk=item).shipping_weight_grams * items[item]
+    return cart_weight
 
 def add_to_cart(request):
     if "cart" not in request.session:
@@ -27,11 +37,20 @@ def add_to_cart(request):
     if request.method == 'POST':
         item_id = request.POST.get('itemID')
         quantity = request.POST.get('quantity')
-        if item_id not in request.session["cart"]["items"]:
-            request.session["cart"]["items"][item_id] = 0
-        request.session["cart"]["items"][item_id] += int(quantity)
+
+        items = copy.deepcopy(request.session["cart"]["items"])
+        if item_id not in items:
+            items[item_id] = 0
+        items[item_id] += int(quantity)
+
+        cart_weight = get_cart_weight(items)
+        if cart_weight > DRONE_LOAD_CARRYING_CAPACITY:
+            return HttpResponse("Unable to add item to cart as it will exceed the drone's carrying capacity by " + str((cart_weight - DRONE_LOAD_CARRYING_CAPACITY)/1000) + " kg.")
+
+        request.session["cart"]["items"] = copy.deepcopy(items)
         request.session.modified = True
-    return HttpResponse("Successfully added to cart: " + json.dumps(request.session["cart"]))
+
+        return HttpResponse("Successfully added to cart.  Weight: " + str(cart_weight/1000) + "/" + str(DRONE_LOAD_CARRYING_CAPACITY/1000) + " kg.")
 
 def flush_session(request):
     request.session.flush()
@@ -49,6 +68,8 @@ def cart(request):
             "quantity": request.session["cart"]["items"][item]
         })
     context = {
+        'location': Clinic.objects.first().name,
+        'role': "Clinic Manager",
         'cart_items': cart_items
     }
     return render(request, 'cart/index.html', context)
@@ -59,6 +80,8 @@ def checkout(request):
             request.session["cart"] = {
                 "items": {}
             }
+            return HttpResponse("No items in cart.")
+        if not request.session["cart"]["items"]:
             return HttpResponse("No items in cart.")
         new_order = Order()
         new_order.status = 1
@@ -73,6 +96,3 @@ def checkout(request):
             "items": {}
         }
         return HttpResponse("Successfully created order.")
-
-    
-

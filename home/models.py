@@ -10,6 +10,7 @@ class Item(models.Model):
     warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     description = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='item_images')
     shipping_weight_grams = models.PositiveIntegerField()
 
 class Clinic(models.Model):

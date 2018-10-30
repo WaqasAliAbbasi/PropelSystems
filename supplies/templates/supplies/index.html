@@ -47,6 +47,9 @@
               <th>Add to Cart</th>
             </tr>
           </thead>
+          <style>
+          .additional-details-icon {background-color: white !important; color: black !important}
+          </style>
           <tbody>
             {% if items %}
             {% for item in items %}
@@ -54,30 +57,46 @@
               <td class="item-id" style="display:none;">{{ item.id }}</td>
               <td class="mdl-data-table__cell--non-numeric">{{ item.description }}</td>
               <td>{{ item.category.name }}</td>
-              <td><img src="https://starkmans.com/pub/media/catalog/product/cache/image/1000x1320/e9c3970ab036de70892d86c6d221abfe/j/b/jb1324.jpg" height=100 /></td>
-              <td><button type="button" class="mdl-button mdl-js-button mdl-button--raised" id="modalbutton" data-toggle="modal" data-target="#exampleModal">View Details</button>
-                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
-                    <div class="modal-dialog" role="document" style="z-index:5000000;">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title" id="exampleModalLabel">Additional Details</h5>
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                          </button>
-                        </div>
-                        <div class="modal-body">
-                            <ul style="list-style-type:none">
-                                <li>Shipping weight: {{item.shipping_weight_grams}}</li>
-                                <li>Category: {{item.category.name}}</li>
-                                <li>Warehouse: {{item.warehouse.name}}</li>
-                                <li>Description: {{item.description}}</li>
-                            </ul>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        </div>
-                      </div>
-                    </div>
+              <td><img src={{ item.image.url }} height=100 /></td>
+              <td>
+                <button type="button" class="modal-button mdl-button mdl-js-button mdl-button--raised" data-toggle="modal" data-target="#exampleModal">
+                  View Details
+                </button>
+                <div class="additional-details mdl-grid" style="display:none;">
+                  <div class="mdl-cell mdl-cell--6-col">
+                    <ul class="mdl-list">
+                      <li class="mdl-list__item mdl-list__item--two-line">
+                        <span class="mdl-list__item-primary-content">
+                          <i class="additional-details-icon material-icons mdl-list__item-avatar">description</i>
+                          <span>Description</span>
+                          <span class="mdl-list__item-sub-title">{{item.description}}</span>
+                        </span>
+                      </li>
+                      <li class="mdl-list__item mdl-list__item--two-line">
+                        <span class="mdl-list__item-primary-content">
+                          <i class="additional-details-icon material-icons mdl-list__item-avatar">category</i>
+                          <span>Category</span>
+                          <span class="mdl-list__item-sub-title">{{item.category.name}}</span>
+                        </span>
+                      </li>
+                      <li class="mdl-list__item mdl-list__item--two-line">
+                        <span class="mdl-list__item-primary-content">
+                          <i class="additional-details-icon material-icons mdl-list__item-avatar">business</i>
+                          <span>Warehouse</span>
+                          <span class="mdl-list__item-sub-title">{{item.warehouse.name}}</span>
+                        </span>
+                      </li>
+                      <li class="mdl-list__item mdl-list__item--two-line">
+                        <span class="mdl-list__item-primary-content">
+                          <i class="additional-details-icon material-icons mdl-list__item-avatar">local_shipping</i>
+                          <span>Shipping Weight</span>
+                          <span class="mdl-list__item-sub-title">{{item.shipping_weight_grams}} grams</span>
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="mdl-cell mdl-cell--6-col" align="center">
+                    <img src={{ item.image.url }} width=250 />
                   </div>
               </td>
               <td>
@@ -92,7 +111,6 @@
                 </button>
               </td>
             </tr>
-
             {% endfor %}
             {% endif %}
           </tbody>
@@ -101,6 +119,23 @@
     </div>
   </div>
 </main>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Additional Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div id="modal-body" class="modal-body">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
   $('#select-category').on('change', function() {
     var loc = location.href;
@@ -112,6 +147,10 @@
 		return false;
   });
 
+  $('.modal-button').on('click', function() {
+    $("#modal-body").html($(this).parent().find(".additional-details").clone().show());
+	});
+
   $('.add-cart').on('click', function() {
     var url = location.href;
     if (url.indexOf("?") !== -1) {
@@ -119,6 +158,10 @@
     }
     const itemID = $(this).parent().parent().find(".item-id").text();
     const quantity = $(this).parent().parent().find(".quantity").val();
+    if ((isNaN(quantity) || isNaN(parseInt(quantity)))) {
+      alert("Invalid Quantity")
+      return false
+    }
     $.post( url + 'add_to_cart', { csrfmiddlewaretoken: '{{ csrf_token }}', "itemID": itemID, "quantity": quantity }, function( response ) {
       alert(response);
     });

@@ -1,7 +1,7 @@
 import csv
 from django.shortcuts import render
 from django.http import HttpResponse
-from home.models import Order
+from home.models import Warehouse, Order
 
 DRONE_LOAD_CARRYING_CAPACITY = 25 * 1000
 ORDER_OVERHEAD_WEIGHT = 1.2 * 1000
@@ -54,6 +54,8 @@ def get_current_shipment():
 def index(request):
     current_shipment = get_current_shipment()
     context = {
+        'location': Warehouse.objects.first().name,
+        'role': "Dispatcher",
         'items': current_shipment
     }
     return render(request, 'dispatch/index.html', context)
@@ -61,6 +63,8 @@ def index(request):
 def dispatch_shipment(request):
     if request.method == 'POST':
         current_shipment = get_current_shipment()
+        if not current_shipment:
+            return HttpResponse("No shipment found.")
         for order in current_shipment:
             order.status = Order.DISPATCHED
             order.save()
