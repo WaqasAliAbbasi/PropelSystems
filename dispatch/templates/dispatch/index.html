@@ -34,11 +34,11 @@
             </tr>
           </thead>
           <tbody>
-            {% if items %}
-            {% for item in items %}
+            {% if orders %}
+            {% for order in orders %}
             <tr>
-              <td>{{ item.id }}</td>
-              <td>{{ item.get_status_display }}</td>
+              <td>{{ order.id }}</td>
+              <td>{{ order.get_status_display }}</td>
             </tr>
             {% endfor %}
             {% endif %}
@@ -49,11 +49,15 @@
   </div>
 </main>
 <script>
-  $('#dispatch-shipment').on('click', function() {
-    $.post("/dispatch/dispatch_shipment", { csrfmiddlewaretoken: '{{ csrf_token }}' }, function( response ) {
+$('#dispatch-shipment').on('click', function() {
+  $.post(
+    '/dispatch/dispatch_shipment',
+    { csrfmiddlewaretoken: '{{ csrf_token }}' },
+    function(response) {
       alert(response);
       location.reload();
-    });
-  });
+    }
+  );
+});
 </script>
 {% endblock %}

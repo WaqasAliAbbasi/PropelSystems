@@ -107,7 +107,7 @@ def index(request):
     context = {
         'location': Warehouse.objects.first().name,
         'role': "Dispatcher",
-        'items': current_shipment
+        'orders': current_shipment
     }
     return render(request, 'dispatch/index.html', context)
 

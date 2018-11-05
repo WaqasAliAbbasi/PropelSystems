@@ -36,5 +36,4 @@
 
 ### How to install packages
 
-* Use pip to install whatever package you want e.g `pip install requests`
-* Update requirements file (Pipfile.lock) by `pipenv lock`
+* Use `pipenv` instead of `pip` to install whatever package you want e.g `pipenv install requests`
