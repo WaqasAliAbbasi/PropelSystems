@@ -1,5 +1,6 @@
 import csv
 import itertools
+import datetime
 from heapq import heappush, heappop
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -88,7 +89,7 @@ def ucs_search(orders):
 
 
 def get_current_shipment():
-    orders = Order.objects.filter(status=Order.QUEUED_FOR_DISPATCH)
+    orders = Order.objects.filter(status=Order.QUEUED_FOR_DISPATCH).order_by('-priority','time_placed')
     current_shipment = []
     remaining_weight = DRONE_LOAD_CARRYING_CAPACITY
     for order in orders:
@@ -118,6 +119,7 @@ def dispatch_shipment(request):
             return HttpResponse("No shipment found.")
         for order in current_shipment:
             order.status = Order.DISPATCHED
+            order.time_dispatched = datetime.datetime.now()
             order.save()
         return HttpResponse("Successfully dispatched shipments.")
 

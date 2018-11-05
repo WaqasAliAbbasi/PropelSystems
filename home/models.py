@@ -32,7 +32,8 @@ class Order(models.Model):
     status = models.IntegerField(choices=((QUEUED_FOR_PROCESSING ,'Queued for Processing'), (PROCESSING_BY_WAREHOUSE,'Processing by Warehouse'), (QUEUED_FOR_DISPATCH,'Queued for Dispatch'), (DISPATCHED,'Dispatched'), (DELIVERED,'Delivered')), default=1)
     priority = models.IntegerField(choices=((1,'Low'),(2,'Medium'),(3,'High')), default=2)
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE)
-    time_placed = models.DateTimeField(auto_now_add=True, blank=True)
+    time_placed = models.DateTimeField(auto_now_add=True)
+    time_dispatched = models.DateTimeField(blank=True, editable=False, null=True)
 
 
 class OrderItem(models.Model):
