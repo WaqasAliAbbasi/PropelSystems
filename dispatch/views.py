@@ -14,7 +14,7 @@ external_data = {
     ("North Lamma General Out-patient Clinic", 12.54),
     ("Peng Chau General Out-patient Clinic", 4.68),
     ("Sok Kwu Wan General Out-patient Clinic", 15.32),
-    ("Tai O General Out-patient Clinic", 14.44),
+    ("Tai O Jockey Club General Out-patient Clinic", 14.44),
     ("Aberdeen General Out-patient Clinic", 16.41),
     ("Ap Lei Chau General Out-patient Clinic", 16.24),
     ("Queen Mary Hospital Drone Port", 13.74)
@@ -22,25 +22,25 @@ external_data = {
   "North Lamma General Out-patient Clinic": [
     ("Peng Chau General Out-patient Clinic", 9.92),
     ("Sok Kwu Wan General Out-patient Clinic", 2.96),
-    ("Tai O General Out-patient Clinic", 26.29),
+    ("Tai O Jockey Club General Out-patient Clinic", 26.29),
     ("Aberdeen General Out-patient Clinic", 5.45),
     ("Ap Lei Chau General Out-patient Clinic", 4.87),
     ("Queen Mary Hospital Drone Port", 5.52)
   ],
   "Peng Chau General Out-patient Clinic": [
     ("Sok Kwu Wan General Out-patient Clinic", 12.88),
-    ("Tai O General Out-patient Clinic", 18.9),
+    ("Tai O Jockey Club General Out-patient Clinic", 18.9),
     ("Aberdeen General Out-patient Clinic", 12.64),
     ("Ap Lei Chau General Out-patient Clinic", 12.62),
     ("Queen Mary Hospital Drone Port", 9.61)
   ],
   "Sok Kwu Wan General Out-patient Clinic": [
-    ("Tai O General Out-patient Clinic", 28.71),
+    ("Tai O Jockey Club General Out-patient Clinic", 28.71),
     ("Aberdeen General Out-patient Clinic", 5.53),
     ("Ap Lei Chau General Out-patient Clinic", 4.77),
     ("Queen Mary Hospital Drone Port", 7.19)
   ],
-  "Tai O General Out-patient Clinic": [
+  "Tai O Jockey Club General Out-patient Clinic": [
     ("Aberdeen General Out-patient Clinic", 30.72),
     ("Ap Lei Chau General Out-patient Clinic", 30.47),
     ("Queen Mary Hospital Drone Port", 28.18)
@@ -153,7 +153,7 @@ def get_itinerary(request):
         route = list(possible_route)
         # Add warehouse at start and end
         distance = get_distance([starting_point] + route  + [starting_point])
-        if distance < minimum_distance:
+        if distance <= minimum_distance:
             minimum_distance = distance
             best_route = route
 
