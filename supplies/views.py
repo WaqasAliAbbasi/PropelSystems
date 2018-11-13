@@ -7,11 +7,13 @@ from dispatch.views import DRONE_LOAD_CARRYING_CAPACITY, ORDER_OVERHEAD_WEIGHT
 
 import json
 
-def index(request):
+def supplies(request):
     try:
-        category_id = request.GET.get('category_id', Category.objects.first().id)
+        # Check if category id specified in the URL
+        category_id = request.GET.get('category_id')
         category = Category.objects.get(pk=category_id)
     except:
+        # Default to first category if category id not specified or invalid
         category = Category.objects.first()
     items = Item.objects.filter(category=category)
     context = {
@@ -30,23 +32,33 @@ def get_cart_weight(items):
     return cart_weight
 
 def add_to_cart(request):
-    if "cart" not in request.session:
-        request.session["cart"] = {
-            "items": {}
-        }
     if request.method == 'POST':
+        # request.session["cart"]["items"] is a dictionary of item_id -> quantity
+        if "cart" not in request.session:
+            request.session["cart"] = {
+                "items": {}
+            }
+
         item_id = request.POST.get('itemID')
         quantity = request.POST.get('quantity')
 
+        # Deep copy the cart from session so we don't affect it if the new cart is invalid
         items = copy.deepcopy(request.session["cart"]["items"])
+
+        # Check if the item already exists in cart
         if item_id not in items:
             items[item_id] = 0
+
+        # Increase quantity of item in cart
         items[item_id] += int(quantity)
 
         cart_weight = get_cart_weight(items)
+
+        # If new cart is invalid, return error and don't affect cart in session
         if cart_weight > DRONE_LOAD_CARRYING_CAPACITY:
             return HttpResponse("Unable to add item to cart as it will exceed the drone's carrying capacity by " + str((cart_weight - DRONE_LOAD_CARRYING_CAPACITY)/1000) + " kg.")
 
+        # If new cart valid, save it to session
         request.session["cart"]["items"] = copy.deepcopy(items)
         request.session.modified = True
 
@@ -57,16 +69,15 @@ def flush_session(request):
     return HttpResponse("Session flushed.")
 
 def cart(request):
-    if "cart" not in request.session:
-        request.session["cart"] = {
-            "items": {}
-        }
     cart_items = []
-    for item in request.session["cart"]["items"]:
-        cart_items.append({
-            "item": Item.objects.get(pk=item),
-            "quantity": request.session["cart"]["items"][item]
-        })
+    # request.session["cart"]["items"] is a dictionary of item_id -> quantity
+    if "cart" in request.session and "items" in request.session["cart"]:
+        for item_id in request.session["cart"]["items"]:
+            quantity = request.session["cart"]["items"][item_id]
+            cart_items.append({
+                "item": Item.objects.get(pk=item_id),
+                "quantity": quantity
+            })
     context = {
         'location': Clinic.objects.first().name,
         'role': "Clinic Manager",
@@ -76,22 +87,15 @@ def cart(request):
 
 def checkout(request):
     if request.method == 'POST':
-        if "cart" not in request.session:
-            request.session["cart"] = {
-                "items": {}
-            }
+        if not request.session["cart"] or not request.session["cart"]["items"]:
             return HttpResponse("No items in cart.")
-        if not request.session["cart"]["items"]:
-            return HttpResponse("No items in cart.")
-        new_order = Order()
-        new_order.status = 1
-        new_order.priority = request.POST.get('priority')
-        new_order.clinic = Clinic.objects.first()
+        new_order = Order(status = Order.QUEUED_FOR_PROCESSING, priority = request.POST.get('priority'), clinic = Clinic.objects.first())
         new_order.save()
-        cart_items = []
-        for item in request.session["cart"]["items"]:
-            oi = OrderItem(order=new_order, item=Item.objects.get(pk=item), quantity=request.session["cart"]["items"][item])
+        for item_id in request.session["cart"]["items"]:
+            quantity = request.session["cart"]["items"][item_id]
+            oi = OrderItem(order=new_order, item=Item.objects.get(pk=item_id), quantity=quantity)
             oi.save()
+        # Empty the session
         request.session["cart"] = {
             "items": {}
         }

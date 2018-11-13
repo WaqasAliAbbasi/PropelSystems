@@ -87,8 +87,9 @@ def ucs_search(orders):
             final_route = route[1]
     return final_route
 
-
+# get_current_shipment gets all orders for the current valid shipment
 def get_current_shipment():
+    # Get all orders ordered by priority and then time placed
     orders = Order.objects.filter(status=Order.QUEUED_FOR_DISPATCH).order_by('-priority','time_placed')
     current_shipment = []
     remaining_weight = DRONE_LOAD_CARRYING_CAPACITY
@@ -103,7 +104,7 @@ def get_current_shipment():
             break
     return current_shipment
 
-def index(request):
+def dispatch(request):
     current_shipment = get_current_shipment()
     context = {
         'location': Warehouse.objects.first().name,
