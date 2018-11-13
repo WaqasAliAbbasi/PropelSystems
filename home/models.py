@@ -1,10 +1,18 @@
 from django.db import models
 
-class Warehouse(models.Model):
+class Location(models.Model):
     name = models.CharField(max_length=200)
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
     altitude_meters = models.PositiveIntegerField()
+
+class Distance(models.Model):
+    location_from = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='location_from')
+    location_to = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='location_to')
+    distance = models.DecimalField(max_digits=9, decimal_places=2)
+
+class Warehouse(Location):
+    pass
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
@@ -16,12 +24,8 @@ class Item(models.Model):
     image = models.ImageField(upload_to='item_images')
     shipping_weight_grams = models.PositiveIntegerField()
 
-class Clinic(models.Model):
-    name = models.CharField(max_length=200)
-    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6)
-    altitude_meters = models.PositiveIntegerField()
+class Clinic(Location):
+    linked_warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE)
 
 class Order(models.Model):
     QUEUED_FOR_PROCESSING = 1
