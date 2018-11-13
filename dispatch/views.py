@@ -52,7 +52,7 @@ external_data = {
   "Ap Lei Chau General Out-patient Clinic": [
     ("Queen Mary Hospital Drone Port", 3.79)
   ]
-};
+}
 distance_dict = {}
 for a in external_data:
     if not a in distance_dict:
@@ -128,6 +128,8 @@ def get_distance(route):
     distance = 0
     a = route[0]
     for b in route[1:]:
+        if b not in distance_dict[a]:
+            return -1000
         distance += distance_dict[a][b]
         a = b
     return distance
@@ -140,21 +142,40 @@ def get_itinerary(request):
     writer.writerow(['Location', 'Latitude', 'Longitude', 'Altitude'])
 
     starting_point = Warehouse.objects.first().name
-    clinics = set()
-    for order in get_current_shipment():
-        clinics.add(order.clinic.name)
 
-    possible_routes = list(itertools.permutations(list(clinics)))
+    clinics_high = set()
+    clinics_medium = set()
+    clinics_low = set()
+    for order in get_current_shipment():
+        if order.priority == Order.HIGH:
+            clinics_high.add(order.clinic.name)
+        elif order.priority == Order.MEDIUM:
+            if order.clinic.name not in clinics_high:
+                clinics_medium.add(order.clinic.name)
+        else:
+            if order.clinic.name not in clinics_high and order.clinic.name not in clinics_low:
+                clinics_low.add(order.clinic.name)
+    
+    # permutations of each priority category
+    permutations_clinics_high = [list(x) for x in itertools.permutations(list(clinics_high))]
+    permutations_clinics_medium = [list(x) for x in itertools.permutations(list(clinics_medium))]
+    permutations_clinics_low = [list(x) for x in itertools.permutations(list(clinics_low))]
+    
+    # product of all the permutations for each category leading from high to medium to low
+    possible_routes = list(itertools.product(permutations_clinics_high,permutations_clinics_medium,permutations_clinics_low))
+    for i in range(len(possible_routes)):
+        possible_routes[i] = possible_routes[i][0] + possible_routes[i][1] + possible_routes[i][2]
+
     # Start off with the first route as the best
-    best_route = list(possible_routes[0])
+    best_route = possible_routes[0]
     # Add warehouse at start and end
     minimum_distance = get_distance([starting_point] + best_route + [starting_point])
     # Check all other routes
     for possible_route in possible_routes[1:]:
-        route = list(possible_route)
+        route = possible_route
         # Add warehouse at start and end
         distance = get_distance([starting_point] + route  + [starting_point])
-        if distance <= minimum_distance:
+        if distance < minimum_distance:
             minimum_distance = distance
             best_route = route
 
