@@ -1,13 +1,14 @@
-import csv
 import itertools
 import datetime
+import io
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 from home.models import Distance, Warehouse, Clinic, Order, OrderItem, Item
 from django.contrib.auth.decorators import login_required
 ##################### CHANGE THIS TO WAREHOUSE WORKER #####################
 from home.decorators import dispatcher_required 
 from home.urls import access
+from reportlab.pdfgen import canvas
 
 def get_queued():
     orders = Order.objects.filter(status=Order.QUEUED_FOR_PROCESSING).order_by('-priority','time_placed')
@@ -75,15 +76,21 @@ def get_order_label(request):
         order = get_order_by_id(order_id)
         orderitems = get_details(order_id)
 
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment;filename=shipping_label.csv'
+        # Create the HttpResponse object with the appropriate PDF headers.
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment;filename="shipping_label.pdf"'
 
-        writer = csv.writer(response)
-        writer.writerow(['Order Number: ' + str(order_id)])
-        writer.writerow(['Order Destination: ' + str(order.clinic.name)])
-        writer.writerow(['Contents:'])
+        # Create the PDF object, using the response object as its "file."
+        p = canvas.Canvas(response)
+
+        p.drawString(100, 750, "Order ID: " + str(order_id))
+        p.drawString(100, 700, "Order Destination: " + str(order.clinic.name))
+        p.drawString(100, 650, "Order Contents: ")
+        count = 1
         for orderitem in orderitems:
-            writer.writerow([OrderItem.orderitem_details(orderitem)])
+            p.drawString(100, 650 - (count * 25), OrderItem.orderitem_details(orderitem))
+            count += 1
+        p.save()
 
         return response
 
