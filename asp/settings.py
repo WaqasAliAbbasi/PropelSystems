@@ -25,7 +25,15 @@ SECRET_KEY = '@qiitkz8$(wqxx-7l_0_lyk5pu10_+97-yq=s=_!8_8v(5%0!p'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+LOGIN_REDIRECT_URL = '/'
+
 ALLOWED_HOSTS = []
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'propelsystems@gmail.com'
+EMAIL_HOST_PASSWORD = 'waqasreactgod'
+EMAIL_PORT = 587
 
 
 # Application definition
@@ -39,7 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'home.apps.HomeConfig',
     'supplies.apps.SuppliesConfig',
-    'dispatch.apps.DispatchConfig'
+    'dispatch.apps.DispatchConfig',
+    'authentication.apps.AuthenticationConfig'
 ]
 
 MIDDLEWARE = [
@@ -57,7 +66,7 @@ ROOT_URLCONF = 'asp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

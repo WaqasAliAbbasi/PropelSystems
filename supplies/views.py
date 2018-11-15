@@ -18,6 +18,7 @@ def supplies(request):
     items = Item.objects.filter(category=category)
     context = {
         'location': Clinic.objects.first().name,
+        'name': request.user.email,
         'role': "Clinic Manager",
         'category_id': category.id,
         'categories': Category.objects.all(),
