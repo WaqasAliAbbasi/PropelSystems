@@ -48,22 +48,23 @@
         <div class="mdl-layout-spacer"></div>
         <span class="mdl-layout-title">
           {% if name %}
-            {{ name }}
+            {{ name }} ({{ role }})
           {% else %}
             John Doe
           {% endif %}
         </span>
         <!-- Navigation -->
         <nav class="mdl-navigation">
-          <a class="mdl-navigation__link" href="">Log Out</a>
+          <a class="mdl-navigation__link" href="/accounts/logout">Log Out</a>
         </nav>
       </div>
     </header>
     <div class="mdl-layout__drawer">
       <span class="mdl-layout-title">ASP Hong Kong</span>
       <nav class="mdl-navigation">
-        <a class="mdl-navigation__link" href="/supplies">Supplies</a>
-        <a class="mdl-navigation__link" href="/dispatch">Dispatch</a>
+          {% for item in sidebar %}
+              <a class="mdl-navigation__link" href={{item.1}}>{{ item.0 }}</a>
+          {% endfor %}
       </nav>
     </div>
     {% block content %}

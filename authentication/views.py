@@ -9,6 +9,7 @@ from django.template.loader import render_to_string
 from .tokens import account_activation_token
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
+import json
 
 def home(request):
     return render(request, 'home.html')
@@ -52,3 +53,19 @@ def activate_user(request, uidb64, token):
         return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
     else:
         return HttpResponse('Activation link is invalid!')
+
+def invite_user_page(request): 
+    return render(request, 'invite_user.html')
+
+def send_invite_email(request):  
+    if request.method == 'POST':
+        emailID = request.POST.get('email')
+        link = 'http://localhost:8000/authenticate/register/?email='+emailID
+        message = 'Click the following link to register for AS-P ' + link
+        mail_subject = 'Invitation for AS-P'
+        email = EmailMessage(
+                mail_subject, message, to=[emailID]
+            )
+        email.send()
+        return HttpResponse('Email Sent')
+        

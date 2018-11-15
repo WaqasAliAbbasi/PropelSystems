@@ -1,12 +1,15 @@
 import copy
 from django.shortcuts import render
 from django.http import HttpResponse
-
 from home.models import Clinic, Category, Item, Order, OrderItem
 from dispatch.views import DRONE_LOAD_CARRYING_CAPACITY, ORDER_OVERHEAD_WEIGHT
-
+from django.contrib.auth.decorators import login_required
+from home.decorators import clinic_manager_required
+from home.urls import access
 import json
 
+@login_required
+@clinic_manager_required
 def supplies(request):
     try:
         # Check if category id specified in the URL
@@ -17,13 +20,15 @@ def supplies(request):
         category = Category.objects.first()
     items = Item.objects.filter(category=category)
     context = {
-        'location': Clinic.objects.first().name,
-        'name': request.user.email,
-        'role': "Clinic Manager",
+        'sidebar': access[request.user.role],
+        'name': request.user.get_full_name(),
+        'role': request.user.get_role_display,
         'category_id': category.id,
         'categories': Category.objects.all(),
         'items': items
     }
+    if request.user.location:
+        context['location'] = request.user.location.name
     return render(request, 'supplies/index.html', context)
 
 def get_cart_weight(items):
@@ -69,6 +74,8 @@ def flush_session(request):
     request.session.flush()
     return HttpResponse("Session flushed.")
 
+@login_required
+@clinic_manager_required
 def cart(request):
     cart_items = []
     # request.session["cart"]["items"] is a dictionary of item_id -> quantity
@@ -80,17 +87,20 @@ def cart(request):
                 "quantity": quantity
             })
     context = {
-        'location': Clinic.objects.first().name,
-        'role': "Clinic Manager",
+        'sidebar': access[request.user.role],
+        'name': request.user.get_full_name(),
+        'role': request.user.get_role_display,
         'cart_items': cart_items
     }
+    if request.user.location:
+        context['location'] = request.user.location.name
     return render(request, 'cart/index.html', context)
 
 def checkout(request):
     if request.method == 'POST':
         if not request.session["cart"] or not request.session["cart"]["items"]:
             return HttpResponse("No items in cart.")
-        new_order = Order(status = Order.QUEUED_FOR_PROCESSING, priority = request.POST.get('priority'), clinic = Clinic.objects.first())
+        new_order = Order(status = Order.QUEUED_FOR_PROCESSING, priority = request.POST.get('priority'), clinic = Clinic.objects.get(id=request.user.location.id))
         new_order.save()
         for item_id in request.session["cart"]["items"]:
             quantity = request.session["cart"]["items"][item_id]

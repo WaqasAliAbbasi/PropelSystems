@@ -17,6 +17,15 @@
   * Password: `123456`
 * When you are done, exit virtual environment by `exit`
 
+### User Accounts
+
+* Clinic Manager
+  * Username: `waqas`
+  * Password: `propel123`
+* Dispatcher
+  * Username: `piyush`
+  * Password: `propel123`
+
 ### How to test elaboration
 
 * Add supply items through [http://localhost:8000/admin/home/item/](http://localhost:8000/admin/home/item/)

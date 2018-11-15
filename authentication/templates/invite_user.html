@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head> 
+<body>
+
+Email:<input type="text" name="email" id="email">
+  <br>
+  <input type="submit" value="Submit" id="submit">
+
+<script>
+    $('#submit').on('click', function() {
+      const emailID = document.getElementById("email").value;
+      $.post( 
+        '/authentication/send_invite_email/',
+        { csrfmiddlewaretoken: '{{ csrf_token }}'
+          ,email: emailID },
+        function(response) {
+          alert(response);
+        }
+      );
+    });
+</script>
+</body>
+</html>

@@ -4,6 +4,9 @@ import datetime
 from django.shortcuts import render
 from django.http import HttpResponse
 from home.models import Distance, Warehouse, Clinic, Order
+from django.contrib.auth.decorators import login_required
+from home.decorators import dispatcher_required
+from home.urls import access
 
 DRONE_LOAD_CARRYING_CAPACITY = 25 * 1000
 ORDER_OVERHEAD_WEIGHT = 1.2 * 1000
@@ -25,13 +28,18 @@ def get_current_shipment():
             break
     return current_shipment
 
+@login_required
+@dispatcher_required
 def dispatch(request):
     current_shipment = get_current_shipment()
     context = {
-        'location': Warehouse.objects.first().name,
-        'role': "Dispatcher",
+        'sidebar': access[request.user.role],
+        'name': request.user.get_full_name(),
+        'role': request.user.get_role_display,
         'orders': current_shipment
     }
+    if request.user.location:
+        context['location'] = request.user.location.name
     return render(request, 'dispatch/index.html', context)
 
 def dispatch_shipment(request):

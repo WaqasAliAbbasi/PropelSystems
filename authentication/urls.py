@@ -10,5 +10,7 @@ urlpatterns = [
     # url(r'^logout/$', auth_views.logout, {'next_page': 'login'}, name='logout'),
     re_path(r'^signup/$', views.signup, name='signup'),
     path('activate/<uidb64>/<token>', views.activate_user, name='activate'),
+    path('send_invite/', views.invite_user_page, name='invite_user_page'),
+    path('send_invite_email/', views.send_invite_email, name='send_invite_email'),
     # url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',views.activate_user, ),
 ]

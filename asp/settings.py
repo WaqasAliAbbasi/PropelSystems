@@ -26,6 +26,7 @@ SECRET_KEY = '@qiitkz8$(wqxx-7l_0_lyk5pu10_+97-yq=s=_!8_8v(5%0!p'
 DEBUG = True
 
 LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 ALLOWED_HOSTS = []
 
@@ -111,6 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'home.User'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
