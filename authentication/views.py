@@ -18,9 +18,13 @@ def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.is_active = False
-            user.save()
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('/')
+            """
             current_site = get_current_site(request)
             mail_subject = 'Activate your blog account.'
             message = render_to_string('send_email.html', {
@@ -34,9 +38,9 @@ def signup(request):
                         mail_subject, message, to=[to_email]
             )
             email.send()
-            return HttpResponse('Please confirm your email address to complete the registration')
+            """
     else:
-        form = SignupForm()
+        form = SignupForm(initial={'email':request.GET.get('email','')})
     return render(request, 'signup.html', {'form': form})
 
 def activate_user(request, uidb64, token):
@@ -60,7 +64,7 @@ def invite_user_page(request):
 def send_invite_email(request):  
     if request.method == 'POST':
         emailID = request.POST.get('email')
-        link = 'http://localhost:8000/authenticate/register/?email='+emailID
+        link = 'http://localhost:8000/authentication/signup/?email='+emailID
         message = 'Click the following link to register for AS-P ' + link
         mail_subject = 'Invitation for AS-P'
         email = EmailMessage(
@@ -68,6 +72,3 @@ def send_invite_email(request):
             )
         email.send()
         return HttpResponse('Email Sent')
-        
-def register_user(request): 
-    return render(request, 'signupform.html')
