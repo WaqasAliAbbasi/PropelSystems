@@ -1,0 +1,141 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<main class="mdl-layout__content">
+  <div class="page-content">
+    <div class="mdl-grid">
+        <div class="mdl-cell mdl-cell--6-col">
+            <div class="mdl-cell mdl-color-text--grey-500">
+            Home &gt; Warehouse
+            </div>
+            <h5>
+            Warehouse
+            </h5>
+            <h6>
+            Orders currently Processing
+            </h6>
+        </div>
+    </div>
+    <div class="mdl-grid">
+      <div class="mdl-cell mdl-cell--12-col" align="center">
+        <table width="100%" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+          <thead>
+            <tr>
+              <th class="mdl-data-table__cell--non-numeric">Order Id</th>
+              <th>Clinic </th> 
+              <th>Time Placed</th>
+              <th>Priority</th>
+              <th>Status</th>
+              <th></th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if processing %}
+            {% for order in processing %}
+            <tr>
+              <td>{{ order.id }}</td>
+              <td>{{ order.clinic.name }}</td>
+              <td>{{ order.time_placed }}</td>
+              <td>{{ order.get_priority_display }}</td>
+              <td>{{ order.get_status_display }}</td>
+              <td><button value="{{ order.id }}" class="view-details mdl-button mdl-js-button mdl-button--raised">
+                View Details
+              </button></td>
+              <td><button value="{{ order.id }}" onclick="location.href='/warehouse/get_order_label?order_id={{ order.id }}'" class="mdl-button mdl-js-button mdl-button--raised">
+                Get Label
+              </button></td>
+              <td><button value="{{ order.id }}" class="move-to-dispatch mdl-button mdl-js-button mdl-button--raised">
+                Ready For Dispatch
+              </button></td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="mdl-grid">
+      <div class="mdl-cell mdl-cell--6-col">
+          <h6>
+          Orders in Processing Queue
+          </h6>
+      </div>
+      <div class="mdl-cell mdl-cell--6-col" align="right" style="margin: auto">
+          <button id="process-next" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">
+          Process Next Item
+          </button>
+      </div>
+    </div>
+    <div class="mdl-grid">
+      <div class="mdl-cell mdl-cell--12-col" align="center">
+        <table width="100%" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+          <thead>
+            <tr>
+              <th class="mdl-data-table__cell--non-numeric">Order Id</th>
+              <th>Clinic </th> 
+              <th>Time Placed</th>
+              <th>Priority</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if queued %}
+            {% for order in queued %}
+            <tr>
+              <td>{{ order.id }}</td>
+              <td>{{ order.clinic.name }}</td>
+              <td>{{ order.time_placed }}</td>
+              <td>{{ order.get_priority_display }}</td>
+              <td>{{ order.get_status_display }}</td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+<script>
+$('#process-next').on('click', function() {
+  $.post(
+    '/warehouse/process_next_order',
+    { csrfmiddlewaretoken: '{{ csrf_token }}' },
+    function(response) {
+      alert(response);
+      location.reload();
+    }
+  );
+});
+</script>
+<script>
+$('.view-details').on('click', function() {
+  var order_id = this.value;
+  $.post(
+    '/warehouse/view_order_details',
+    { csrfmiddlewaretoken: '{{ csrf_token }}',
+    order_id: order_id },
+    function(response) {
+      alert(response);
+      location.reload();
+    }
+  );
+});
+</script>
+<script>
+$('.move-to-dispatch').on('click', function() {
+  var order_id = this.value;
+  $.post(
+    '/warehouse/move_to_dispatch',
+    { csrfmiddlewaretoken: '{{ csrf_token }}',
+    order_id: order_id },
+    function(response) {
+      alert(response);
+      location.reload();
+    }
+  );
+});
+</script>
+{% endblock %}

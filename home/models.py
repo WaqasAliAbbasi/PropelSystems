@@ -85,5 +85,8 @@ class OrderItem(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.IntegerField()
 
+    def orderitem_details(self):
+        return str(self.quantity) + ' x ' + str(self.item)
+
     def __str__(self):
         return 'Order #' + str(self.order.id) + ' - ' + str(self.quantity) + ' x ' + str(self.item)

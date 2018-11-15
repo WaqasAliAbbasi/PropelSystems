@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'home.apps.HomeConfig',
     'supplies.apps.SuppliesConfig',
     'dispatch.apps.DispatchConfig',
+    'warehouse.apps.WarehouseConfig',
     'authentication.apps.AuthenticationConfig'
 ]
 
