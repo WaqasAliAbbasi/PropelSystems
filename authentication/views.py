@@ -69,3 +69,5 @@ def send_invite_email(request):
         email.send()
         return HttpResponse('Email Sent')
         
+def register_user(request): 
+    return render(request, 'signupform.html')

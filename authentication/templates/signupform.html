@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head> 
+<body>
+
+Email:<input type="text" name="username" id="username">
+  <br>
+Password:<input type="password" name="password" id="password">
+  <br>
+First Name:<input type="text" name="first_name" id="first_name">
+  <br>
+Last Name:<input type="text" name="last_name" id="last_name">
+  <br>
+<input type="submit" value="Register" id="submit">
+
+<script>
+    $('#submit').on('click', function() {
+      const emailID = document.getElementById("email").value;
+      $.post( 
+        '/authentication/send_invite_email/',
+        { csrfmiddlewaretoken: '{{ csrf_token }}'
+          ,email: emailID },
+        function(response) {
+          alert(response);
+        }
+      );
+    });
+</script>
+</body>
+</html>
