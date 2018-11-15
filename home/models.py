@@ -24,7 +24,6 @@ class User(AbstractUser):
         (DISPATCHER, 'Dispatcher'),
         (HOSPITAL_AUTHORITY, 'Hospital Authority'),
     )
-
     role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES)
     location = models.ForeignKey(Location, on_delete=models.CASCADE, blank = True, null = True)
 

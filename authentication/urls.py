@@ -6,9 +6,7 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='home'),
-    # url(r'^login/$', auth_views.login, {'template_name': 'login.html'}, name='login'),
-    # url(r'^logout/$', auth_views.logout, {'next_page': 'login'}, name='logout'),
-    path('signup/', views.signup, name='signup'),
+    path('invite/', views.invite, name='invite'),
     path('activate/<uidb64>/<token>', views.activate_user, name='activate'),
     path('send_invite/', views.invite_user_page, name='invite_user_page'),
     path('send_invite_email/', views.send_invite_email, name='send_invite_email')
