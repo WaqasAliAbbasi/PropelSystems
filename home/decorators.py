@@ -21,4 +21,6 @@ def clinic_manager_required(function=None, redirect_field_name=REDIRECT_FIELD_NA
 
 def dispatcher_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url='login'):
     return user_required(role=User.DISPATCHER, function=function, redirect_field_name=redirect_field_name, login_url=login_url)
-    
+
+def admin_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url='login'):
+    return user_required(role=User.ADMIN, function=function, redirect_field_name=redirect_field_name, login_url=login_url)

@@ -16,7 +16,7 @@ class User(AbstractUser):
     WAREHOUSE_PERSONNEL = 2
     DISPATCHER = 3
     HOSPITAL_AUTHORITY = 4
-    
+
     ROLE_CHOICES = (
         (ADMIN, 'Admin'),
         (CLINIC_MANAGER, 'Clinic Manager'),
@@ -24,8 +24,14 @@ class User(AbstractUser):
         (DISPATCHER, 'Dispatcher'),
         (HOSPITAL_AUTHORITY, 'Hospital Authority'),
     )
+
+    username = models.CharField(max_length=10,default= None, null=True)
+    email = models.EmailField(unique=True)
     role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES)
     location = models.ForeignKey(Location, on_delete=models.CASCADE, blank = True, null = True)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
 
 class Distance(models.Model):
     location_from = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='location_from')
@@ -37,7 +43,7 @@ class Warehouse(Location):
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
-    
+
     def __str__(self):
         return self.name
 

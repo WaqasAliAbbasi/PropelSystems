@@ -13,17 +13,17 @@
 * Start web server by `python manage.py runserver`
 * Access web app at [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 * Access admin at [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin) with following credentials:
-  * Username: `admin`
+  * Username: `admin@propelsystems.com`
   * Password: `123456`
 * When you are done, exit virtual environment by `exit`
 
 ### User Accounts
 
 * Clinic Manager
-  * Username: `waqas`
+  * Username: `waqas.abbasi@outlook.com`
   * Password: `propel123`
 * Dispatcher
-  * Username: `piyush`
+  * Username: `piyushjha0999@gmail.com`
   * Password: `propel123`
 
 ### How to test elaboration
