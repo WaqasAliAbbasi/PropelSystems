@@ -6,15 +6,15 @@ from django.http import HttpResponse
 from home.models import Distance, Warehouse, Clinic, Order
 from django.contrib.auth.decorators import login_required
 from home.decorators import dispatcher_required
-from home.urls import access
+from home.views import access
 
 DRONE_LOAD_CARRYING_CAPACITY = 25 * 1000
 ORDER_OVERHEAD_WEIGHT = 1.2 * 1000
 
 # get_current_shipment gets all orders for the current valid shipment
-def get_current_shipment():
+def get_current_shipment(warehouse):
     # Get all orders ordered by priority and then time placed
-    orders = Order.objects.filter(status=Order.QUEUED_FOR_DISPATCH).order_by('-priority','time_placed')
+    orders = Order.objects.filter(clinic__linked_warehouse=warehouse, status=Order.QUEUED_FOR_DISPATCH).order_by('-priority','time_placed')
     current_shipment = []
     remaining_weight = DRONE_LOAD_CARRYING_CAPACITY
     for order in orders:
@@ -31,20 +31,19 @@ def get_current_shipment():
 @login_required
 @dispatcher_required
 def dispatch(request):
-    current_shipment = get_current_shipment()
+    current_shipment = get_current_shipment(request.user.warehouse)
     context = {
         'sidebar': access[request.user.role],
         'name': request.user.get_full_name(),
+        'location': request.user.warehouse.name,
         'role': request.user.get_role_display,
         'orders': current_shipment
     }
-    if request.user.location:
-        context['location'] = request.user.location.name
     return render(request, 'dispatch/index.html', context)
 
 def dispatch_shipment(request):
     if request.method == 'POST':
-        current_shipment = get_current_shipment()
+        current_shipment = get_current_shipment(request.user.warehouse)
         if not current_shipment:
             return HttpResponse("No shipment found.")
         for order in current_shipment:
@@ -81,7 +80,7 @@ def get_itinerary(request):
     clinics_high = set()
     clinics_medium = set()
     clinics_low = set()
-    for order in get_current_shipment():
+    for order in get_current_shipment(request.user.warehouse):
         if order.priority == Order.HIGH:
             clinics_high.add(order.clinic)
         elif order.priority == Order.MEDIUM:
@@ -90,12 +89,12 @@ def get_itinerary(request):
         else:
             if order.clinic not in clinics_high and order.clinic not in clinics_low:
                 clinics_low.add(order.clinic)
-    
+
     # permutations of each priority category
     permutations_clinics_high = [list(x) for x in itertools.permutations(list(clinics_high))]
     permutations_clinics_medium = [list(x) for x in itertools.permutations(list(clinics_medium))]
     permutations_clinics_low = [list(x) for x in itertools.permutations(list(clinics_low))]
-    
+
     # product of all the permutations for each category leading from high to medium to low
     possible_routes = list(itertools.product(permutations_clinics_high,permutations_clinics_medium,permutations_clinics_low))
     for i in range(len(possible_routes)):
@@ -113,7 +112,7 @@ def get_itinerary(request):
         if distance < minimum_distance:
             minimum_distance = distance
             best_route = route
-    
+
     # Add starting point at end of csv as required
     best_route += [starting_point]
     # Write itinerary to csv

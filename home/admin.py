@@ -9,12 +9,12 @@ class CustomUserChangeForm(UserChangeForm):
 
 class CustomUserAdmin(UserAdmin):
     form = CustomUserChangeForm
-    list_display = UserAdmin.list_display + ('role', 'location')
+    list_display = UserAdmin.list_display + ('role', 'warehouse', 'clinic')
     fieldsets = UserAdmin.fieldsets + (
-        (None, {'fields': ('role','location',)}),
+        (None, {'fields': ('role','warehouse', 'clinic')}),
     )
     add_fieldsets = UserAdmin.add_fieldsets + (
-        (None, {'fields': ('role','location',)}),
+        (None, {'fields': ('email','role','warehouse', 'clinic')}),
     )
 
 class OrderAdmin(admin.ModelAdmin):

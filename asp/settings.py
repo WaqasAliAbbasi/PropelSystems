@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'supplies.apps.SuppliesConfig',
     'dispatch.apps.DispatchConfig',
     'warehouse.apps.WarehouseConfig',
-    'authentication.apps.AuthenticationConfig'
+    'authentication.apps.AuthenticationConfig',
+    'delivery.apps.DeliveryConfig'
 ]
 
 MIDDLEWARE = [

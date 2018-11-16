@@ -6,15 +6,15 @@ from django.http import HttpResponse, FileResponse
 from home.models import Distance, Warehouse, Clinic, Order, OrderItem, Item
 from django.contrib.auth.decorators import login_required
 from home.decorators import warehouse_personnel_required
-from home.urls import access
+from home.views import access
 from reportlab.pdfgen import canvas
 
-def get_queued():
-    orders = Order.objects.filter(status=Order.QUEUED_FOR_PROCESSING).order_by('-priority','time_placed')
+def get_queued(warehouse):
+    orders = Order.objects.filter(clinic__linked_warehouse=warehouse, status=Order.QUEUED_FOR_PROCESSING).order_by('-priority','time_placed')
     return orders
 
-def get_processing():
-    orders = Order.objects.filter(status=Order.PROCESSING_BY_WAREHOUSE).order_by('-priority','time_placed')
+def get_processing(warehouse):
+    orders = Order.objects.filter(clinic__linked_warehouse=warehouse, status=Order.PROCESSING_BY_WAREHOUSE).order_by('-priority','time_placed')
     return orders
 
 def get_details(order_id):
@@ -29,22 +29,21 @@ def get_order_by_id(order_id):
 @login_required
 @warehouse_personnel_required
 def warehouse(request):
-    queued = get_queued()
-    processing = get_processing()
+    queued = get_queued(request.user.warehouse)
+    processing = get_processing(request.user.warehouse)
     context = {
         'sidebar': access[request.user.role],
         'name': request.user.get_full_name(),
+        'location': request.user.warehouse.name,
         'role': request.user.get_role_display,
         'queued': queued,
         'processing': processing
     }
-    if request.user.location:
-        context['location'] = request.user.location.name
     return render(request, 'warehouse/index.html', context)
 
 def process_next_order(request):
     # if request.method == 'POST':
-    #     processing = get_processing()
+    #     processing = get_processing(request.user.warehouse)
     #     if not processing:
     #         return HttpResponse("No orders in queue.")
     #     for order in processing:
@@ -52,7 +51,7 @@ def process_next_order(request):
     #         order.save()
     #     return HttpResponse("Moved order to processing.")
     if request.method == 'POST':
-        queued = get_queued()
+        queued = get_queued(request.user.warehouse)
         if not queued:
             return HttpResponse("No orders in queue.")
         else:
@@ -96,7 +95,7 @@ def get_order_label(request):
 def move_to_dispatch(request):
     if request.method == 'POST':
         order_id = request.POST['order_id']
-        processing = get_processing()
+        processing = get_processing(request.user.warehouse)
         for order in processing:
             if str(order.id) == str(order_id):
                 order.status = Order.QUEUED_FOR_DISPATCH

@@ -6,12 +6,3 @@ app_name = 'home'
 urlpatterns = [
     path('', views.index, name='index'),
 ]
-
-access = {
-    User.CLINIC_MANAGER: [
-        ["Supplies","/supplies"]
-    ],
-    User.DISPATCHER: [
-        ["Dispatch","/dispatch"],
-    ]
-}

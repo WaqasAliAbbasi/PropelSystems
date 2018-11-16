@@ -1,0 +1,57 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<main class="mdl-layout__content">
+  <div class="page-content">
+    <div class="mdl-grid">
+        <div class="mdl-cell mdl-cell--6-col">
+            <div class="mdl-cell mdl-color-text--grey-500">
+            Home &gt; Delivery
+            </div>
+            <h5>
+            Delivery
+            </h5>
+            <h6>
+            Dispatched
+            </h6>
+        </div>
+    </div>
+    <div class="mdl-grid">
+      <div class="mdl-cell mdl-cell--12-col" align="center">
+        <table width="100%" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+          <thead>
+            <tr>
+              <th class="mdl-data-table__cell--non-numeric">Order Id</th>
+              <th>Time Placed</th>
+              <th>Time Dispatched</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if orders %}
+            {% for order in orders %}
+            <tr>
+              <td>{{ order.id }}</td>
+              <td>{{ order.time_placed }}</td>
+              <td>{{ order.time_dispatched }}</td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+<script>
+$('#dispatch-shipment').on('click', function() {
+  $.post(
+    '/dispatch/dispatch_shipment',
+    { csrfmiddlewaretoken: '{{ csrf_token }}' },
+    function(response) {
+      alert(response);
+      location.reload();
+    }
+  );
+});
+</script>
+{% endblock %}

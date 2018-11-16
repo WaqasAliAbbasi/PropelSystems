@@ -10,29 +10,6 @@ class Location(models.Model):
     def __str__(self):
         return self.name
 
-class User(AbstractUser):
-    ADMIN = 0
-    CLINIC_MANAGER = 1
-    WAREHOUSE_PERSONNEL = 2
-    DISPATCHER = 3
-    HOSPITAL_AUTHORITY = 4
-
-    ROLE_CHOICES = (
-        (ADMIN, 'Admin'),
-        (CLINIC_MANAGER, 'Clinic Manager'),
-        (WAREHOUSE_PERSONNEL, 'Warehouse Personnel'),
-        (DISPATCHER, 'Dispatcher'),
-        (HOSPITAL_AUTHORITY, 'Hospital Authority'),
-    )
-
-    username = models.CharField(max_length=10,default= None, null=True)
-    email = models.EmailField(unique=True)
-    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES)
-    location = models.ForeignKey(Location, on_delete=models.CASCADE, blank = True, null = True)
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
-
 class Distance(models.Model):
     location_from = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='location_from')
     location_to = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='location_to')
@@ -60,6 +37,30 @@ class Item(models.Model):
 class Clinic(Location):
     linked_warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE)
 
+class User(AbstractUser):
+    ADMIN = 0
+    CLINIC_MANAGER = 1
+    WAREHOUSE_PERSONNEL = 2
+    DISPATCHER = 3
+    HOSPITAL_AUTHORITY = 4
+
+    ROLE_CHOICES = (
+        (ADMIN, 'Admin'),
+        (CLINIC_MANAGER, 'Clinic Manager'),
+        (WAREHOUSE_PERSONNEL, 'Warehouse Personnel'),
+        (DISPATCHER, 'Dispatcher'),
+        (HOSPITAL_AUTHORITY, 'Hospital Authority'),
+    )
+
+    username = models.CharField(max_length=10,default= None, null=True)
+    email = models.EmailField(unique=True)
+    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES)
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, blank = True, null = True)
+    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, blank = True, null = True)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
 class Order(models.Model):
     QUEUED_FOR_PROCESSING = 1
     PROCESSING_BY_WAREHOUSE = 2
@@ -72,10 +73,12 @@ class Order(models.Model):
     MEDIUM = 2
     HIGH = 3
     priority = models.IntegerField(choices=((LOW,'Low'),(MEDIUM,'Medium'),(HIGH,'High')), default=2)
+
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE)
     time_placed = models.DateTimeField(auto_now_add=True)
     time_dispatched = models.DateTimeField(blank=True, editable=False, null=True)
-
+    time_delivered = models.DateTimeField(blank=True, editable=False, null=True)
+    
     def __str__(self):
         return 'Order #' + str(self.id) + ' - ' + self.clinic.name + ' - ' + self.time_placed.strftime("%c")
 
