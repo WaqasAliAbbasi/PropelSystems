@@ -7,6 +7,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
 
 from .forms import InviteForm, SignupFormClinic, SignupFormNonClinic
 from .tokens import account_activation_token
@@ -31,11 +32,18 @@ def invite(request):
                 role=int(form.cleaned_data.get('role')),
                 is_active=False
             )
+            user.save()
+
             if user.role == User.ADMIN:
                 user.is_staff = True
                 user.is_superuser = True
-            if user.role == User.WAREHOUSE_PERSONNEL or user.role == User.DISPATCHER:
+            elif user.role == User.WAREHOUSE_PERSONNEL or user.role == User.DISPATCHER:
                 user.warehouse = Warehouse.objects.all().first()
+            elif user.role == User.HOSPITAL_AUTHORITY:
+                user.is_staff = True
+                health_authority_group = Group.objects.get(name='Hospital Authority')
+                health_authority_group.user_set.add(user)
+
             user.save()
 
             email = EmailMessage(
