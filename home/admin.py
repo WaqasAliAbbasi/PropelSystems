@@ -18,7 +18,7 @@ class CustomUserAdmin(UserAdmin):
     )
 
 class OrderAdmin(admin.ModelAdmin):
-    readonly_fields = ('time_placed','time_dispatched',)
+    readonly_fields = ('time_placed','time_dispatched','time_delivered')
 
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Location)

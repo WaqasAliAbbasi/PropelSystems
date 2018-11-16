@@ -22,6 +22,9 @@
 * Clinic Manager
   * Username: `waqas.abbasi@outlook.com`
   * Password: `propel123`
+* Warehouse Personnel
+  * Username: `david@propelsystems.com`
+  * Password: `propel123`
 * Dispatcher
   * Username: `piyushjha0999@gmail.com`
   * Password: `propel123`

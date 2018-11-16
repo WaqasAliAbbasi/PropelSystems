@@ -24,15 +24,21 @@
               <th class="mdl-data-table__cell--non-numeric">Order Id</th>
               <th>Time Placed</th>
               <th>Time Dispatched</th>
+              <th>Notify Delivery</th>
             </tr>
           </thead>
           <tbody>
             {% if orders %}
             {% for order in orders %}
             <tr>
-              <td>{{ order.id }}</td>
+              <td class="order-id">{{ order.id }}</td>
               <td>{{ order.time_placed }}</td>
               <td>{{ order.time_dispatched }}</td>
+              <td>
+                <button class="notify-delivery mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
+                  Notify Delivery
+                </button>
+              </td>
             </tr>
             {% endfor %}
             {% endif %}
@@ -43,15 +49,16 @@
   </div>
 </main>
 <script>
-$('#dispatch-shipment').on('click', function() {
-  $.post(
-    '/dispatch/dispatch_shipment',
-    { csrfmiddlewaretoken: '{{ csrf_token }}' },
-    function(response) {
-      alert(response);
-      location.reload();
+  $('.notify-delivery').on('click', function() {
+    var url = location.href;
+    const orderID = $(this).parent().parent().find(".order-id").text();
+    var r = confirm("Confirm delivery of order #" + orderID + "?");
+    if (r) {
+      $.post(url + 'notify_delivery', { csrfmiddlewaretoken: '{{ csrf_token }}', "orderID": orderID }, function( response ) {
+        alert(response);
+        location.reload();
+      });
     }
-  );
-});
+  });
 </script>
 {% endblock %}
