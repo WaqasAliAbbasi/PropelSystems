@@ -5,8 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, FileResponse
 from home.models import Distance, Warehouse, Clinic, Order, OrderItem, Item
 from django.contrib.auth.decorators import login_required
-##################### CHANGE THIS TO WAREHOUSE WORKER #####################
-from home.decorators import dispatcher_required 
+from home.decorators import warehouse_personnel_required
 from home.urls import access
 from reportlab.pdfgen import canvas
 
@@ -28,7 +27,7 @@ def get_order_by_id(order_id):
     return order
 
 @login_required
-@dispatcher_required   ##################### CHANGE THIS TO WAREHOUSE WORKER #####################
+@warehouse_personnel_required
 def warehouse(request):
     queued = get_queued()
     processing = get_processing()
@@ -95,7 +94,7 @@ def get_order_label(request):
         return response
 
 def move_to_dispatch(request):
-    if request.method == 'POST': 
+    if request.method == 'POST':
         order_id = request.POST['order_id']
         processing = get_processing()
         for order in processing:
@@ -103,5 +102,5 @@ def move_to_dispatch(request):
                 order.status = Order.QUEUED_FOR_DISPATCH
                 order.save()
                 return HttpResponse("Moved order to dispatch queue")
-        
+
         return HttpResponse("Error: Order cannot be found.")

@@ -24,3 +24,6 @@ def dispatcher_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, 
 
 def admin_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url='login'):
     return user_required(role=User.ADMIN, function=function, redirect_field_name=redirect_field_name, login_url=login_url)
+
+def warehouse_personnel_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url='login'):
+    return user_required(role=User.WAREHOUSE_PERSONNEL, function=function, redirect_field_name=redirect_field_name, login_url=login_url)
