@@ -4,6 +4,7 @@ from .models import User
 
 access = {
     User.ADMIN: [
+        ["Admin","/admin"],
         ["Invite","/auth/invite"]
     ],
     User.CLINIC_MANAGER: [
@@ -16,14 +17,19 @@ access = {
     User.DISPATCHER: [
         ["Dispatch","/dispatch"],
     ],
+    User.HOSPITAL_AUTHORITY: [
+        ["Admin","/admin"]
+    ],
 }
 
 def index(request):
-    links = ''
+    sidebar = []
     for role in access:
         for link in access[role]:
-            links += "<li><a href='" + link[1] + "'>" + link[0] + "</a></li>"
-
-    return HttpResponse(
-        "<h1>AS-P Homepage</h1><ul>" + links + "</ul>"
-    )
+            if link not in sidebar:
+                sidebar.append(link)
+    context = {
+        'sidebar': list(sidebar),
+        'fixed': True
+    }
+    return render(request, 'home/base.html', context)

@@ -14,9 +14,8 @@ def delivery(request):
     orders = Order.objects.filter(clinic=request.user.clinic, status=Order.DISPATCHED).order_by('time_dispatched')
     context = {
         'sidebar': access[request.user.role],
-        'name': request.user.get_full_name(),
+        'user': request.user,
         'location': request.user.clinic.name,
-        'role': request.user.get_role_display,
         'orders': orders
     }
     return render(request, 'delivery/index.html', context)

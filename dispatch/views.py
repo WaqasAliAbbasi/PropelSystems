@@ -34,9 +34,8 @@ def dispatch(request):
     current_shipment = get_current_shipment(request.user.warehouse)
     context = {
         'sidebar': access[request.user.role],
-        'name': request.user.get_full_name(),
+        'user': request.user,
         'location': request.user.warehouse.name,
-        'role': request.user.get_role_display,
         'orders': current_shipment
     }
     return render(request, 'dispatch/index.html', context)

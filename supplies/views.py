@@ -21,8 +21,7 @@ def supplies(request):
     items = Item.objects.filter(warehouse=request.user.clinic.linked_warehouse, category=category)
     context = {
         'sidebar': access[request.user.role],
-        'name': request.user.get_full_name(),
-        'role': request.user.get_role_display,
+        'user': request.user,
         'location': request.user.clinic.name,
         'category_id': category.id,
         'categories': Category.objects.all(),
@@ -87,9 +86,8 @@ def cart(request):
             })
     context = {
         'sidebar': access[request.user.role],
-        'name': request.user.get_full_name(),
+        'user': request.user,
         'location': request.user.clinic.name,
-        'role': request.user.get_role_display,
         'cart_items': cart_items
     }
     return render(request, 'cart/index.html', context)
