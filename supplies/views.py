@@ -76,8 +76,10 @@ def flush_session(request):
 @clinic_manager_required
 def cart(request):
     cart_items = []
+    cart_weight = None
     # request.session["cart"]["items"] is a dictionary of item_id -> quantity
     if "cart" in request.session and "items" in request.session["cart"]:
+        cart_weight = get_cart_weight(request.session["cart"]["items"])
         for item_id in request.session["cart"]["items"]:
             quantity = request.session["cart"]["items"][item_id]
             cart_items.append({
@@ -88,7 +90,9 @@ def cart(request):
         'sidebar': access[request.user.role],
         'user': request.user,
         'location': request.user.clinic.name,
-        'cart_items': cart_items
+        'cart_items': cart_items,
+        'weight': str(cart_weight/1000) + " kg",
+        'max_weight': str(DRONE_LOAD_CARRYING_CAPACITY/1000) + " kg",
     }
     return render(request, 'cart/index.html', context)
 

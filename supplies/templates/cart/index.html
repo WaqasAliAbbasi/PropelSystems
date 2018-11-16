@@ -6,13 +6,21 @@
         <div class="mdl-grid">
             <div class="mdl-cell mdl-cell--6-col">
                 <div class="mdl-cell mdl-color-text--grey-500">
-                Home &gt; Supplies &gt; Cart
+                <a href="/">Home</a> &gt; <a href="/supplies">Supplies</a> &gt; Cart
                 </div>
                 <h5>
                 Cart
                 </h5>
             </div>
-            <div class="mdl-cell mdl-cell--6-col" align="right" style="margin: auto">
+            <div class="mdl-cell mdl-cell--1-col" align="right" style="margin: auto">
+              <h6>Order Weight</h6>
+              <p>{{ weight }}</p>
+            </div>
+            <div class="mdl-cell mdl-cell--1-col" align="right" style="margin: auto">
+              <h6>Max Weight</h6>
+              <p>{{ max_weight }}</p>
+            </div>
+            <div class="mdl-cell mdl-cell--4-col" align="right" style="margin: auto">
                 <button id="checkout" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">
                 Checkout
                 </button>
