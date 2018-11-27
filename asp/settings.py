@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     'dispatch.apps.DispatchConfig',
     'warehouse.apps.WarehouseConfig',
     'authentication.apps.AuthenticationConfig',
-    'delivery.apps.DeliveryConfig',
+    'orders.apps.OrdersConfig',
     'crispy_forms',
 ]
 

@@ -67,7 +67,8 @@ class Order(models.Model):
     QUEUED_FOR_DISPATCH = 3
     DISPATCHED = 4
     DELIVERED = 5
-    status = models.IntegerField(choices=((QUEUED_FOR_PROCESSING ,'Queued for Processing'), (PROCESSING_BY_WAREHOUSE,'Processing by Warehouse'), (QUEUED_FOR_DISPATCH,'Queued for Dispatch'), (DISPATCHED,'Dispatched'), (DELIVERED,'Delivered')), default=1)
+    CANCELLED = 6
+    status = models.IntegerField(choices=((QUEUED_FOR_PROCESSING ,'Queued for Processing'), (PROCESSING_BY_WAREHOUSE,'Processing by Warehouse'), (QUEUED_FOR_DISPATCH,'Queued for Dispatch'), (DISPATCHED,'Dispatched'), (DELIVERED,'Delivered'), (CANCELLED, 'Cancelled')), default=1)
 
     LOW = 1
     MEDIUM = 2
@@ -78,7 +79,7 @@ class Order(models.Model):
     time_placed = models.DateTimeField(auto_now_add=True)
     time_dispatched = models.DateTimeField(blank=True, editable=False, null=True)
     time_delivered = models.DateTimeField(blank=True, editable=False, null=True)
-    
+
     def __str__(self):
         return 'Order #' + str(self.id) + ' - ' + self.clinic.name + ' - ' + self.time_placed.strftime("%c")
 

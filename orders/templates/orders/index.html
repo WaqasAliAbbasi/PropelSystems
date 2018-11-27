@@ -1,0 +1,96 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<main class="mdl-layout__content">
+  <div class="page-content">
+    <div class="mdl-grid">
+        <div class="mdl-cell mdl-cell--6-col">
+            <div class="mdl-cell mdl-color-text--grey-500">
+            Home &gt; Orders
+            </div>
+            <h5>
+            Orders
+            </h5>
+        </div>
+    </div>
+    <div class="mdl-grid">
+      <div class="mdl-cell mdl-cell--12-col" align="center">
+        <table width="100%" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+          <thead>
+            <tr>
+              <th class="mdl-data-table__cell--non-numeric">Order Id</th>
+              <th>Status</th>
+              <th>Time Placed</th>
+              <th>Time Dispatched</th>
+              <th>Cancel Order</th>
+              <th>Notify Delivery</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if orders %}
+            {% for order in orders %}
+            <tr>
+              <td class="order-id">{{ order.id }}</td>
+              <td>{{ order.get_status_display }}
+              <td>{{ order.time_placed }}</td>
+              <td>{{ order.time_dispatched | default_if_none:""}}</td>
+              <td>
+                <button class="cancel-order mdl-button mdl-js-button mdl-button--raised mdl-button--accent" {% if order.status != 1 %} disabled {% endif %}>
+                  Cancel
+                </button>
+              </td>
+              <td>
+                <button class="notify-delivery mdl-button mdl-js-button mdl-button--raised mdl-button--colored" {% if order.status != 4 %} disabled {% endif %}>
+                  Notify Delivery
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+<script>
+$('.cancel-order').on('click', function() {
+  var url = location.href;
+  const orderID = $(this)
+    .parent()
+    .parent()
+    .find('.order-id')
+    .text();
+  var r = confirm('Confirm cancellation of order #' + orderID + '?');
+  if (r) {
+    $.post(
+      url + 'cancel',
+      { csrfmiddlewaretoken: '{{ csrf_token }}', orderID: orderID },
+      function(response) {
+        alert(response);
+        location.reload();
+      }
+    );
+  }
+});
+$('.notify-delivery').on('click', function() {
+  var url = location.href;
+  const orderID = $(this)
+    .parent()
+    .parent()
+    .find('.order-id')
+    .text();
+  var r = confirm('Confirm delivery of order #' + orderID + '?');
+  if (r) {
+    $.post(
+      url + 'notify_delivery',
+      { csrfmiddlewaretoken: '{{ csrf_token }}', orderID: orderID },
+      function(response) {
+        alert(response);
+        location.reload();
+      }
+    );
+  }
+});
+</script>
+{% endblock %}

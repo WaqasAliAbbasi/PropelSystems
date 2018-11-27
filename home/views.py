@@ -9,7 +9,7 @@ access = {
     ],
     User.CLINIC_MANAGER: [
         ["Supplies","/supplies"],
-        ["Delivery","/delivery"]
+        ["Orders","/orders"]
     ],
     User.WAREHOUSE_PERSONNEL: [
         ["Warehouse","/warehouse"],
