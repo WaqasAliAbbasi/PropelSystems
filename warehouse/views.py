@@ -68,27 +68,30 @@ def view_order_details(request):
             text += (OrderItem.orderitem_details(orderitem)) + '\n'
         return HttpResponse(text)
 
+def generate_label(file, order_id):
+    order = get_order_by_id(order_id)
+    order_items = get_details(order_id)
+
+    p = canvas.Canvas(file)
+    p.drawString(100, 750, "Order ID: " + str(order_id))
+    p.drawString(100, 700, "Order Destination: " + str(order.clinic.name))
+    p.drawString(100, 650, "Order Contents: ")
+    count = 1
+    for order_item in order_items:
+        p.drawString(100, 650 - (count * 25), OrderItem.orderitem_details(order_item))
+        count += 1
+    p.save()
+
 def get_order_label(request):
     if request.method == 'GET':
         order_id = request.GET['order_id']
-        order = get_order_by_id(order_id)
-        orderitems = get_details(order_id)
 
         # Create the HttpResponse object with the appropriate PDF headers.
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = 'attachment;filename="shipping_label.pdf"'
 
         # Create the PDF object, using the response object as its "file."
-        p = canvas.Canvas(response)
-
-        p.drawString(100, 750, "Order ID: " + str(order_id))
-        p.drawString(100, 700, "Order Destination: " + str(order.clinic.name))
-        p.drawString(100, 650, "Order Contents: ")
-        count = 1
-        for orderitem in orderitems:
-            p.drawString(100, 650 - (count * 25), OrderItem.orderitem_details(orderitem))
-            count += 1
-        p.save()
+        generate_label(response, order_id)
 
         return response
 

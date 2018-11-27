@@ -3,10 +3,14 @@ import itertools
 import datetime
 from django.shortcuts import render
 from django.http import HttpResponse
-from home.models import Distance, Warehouse, Clinic, Order
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from home.models import Distance, Warehouse, Clinic, Order, User
 from django.contrib.auth.decorators import login_required
 from home.decorators import dispatcher_required
 from home.views import access
+from warehouse.views import generate_label
+from io import BytesIO
 
 DRONE_LOAD_CARRYING_CAPACITY = 25 * 1000
 ORDER_OVERHEAD_WEIGHT = 1.2 * 1000
@@ -49,6 +53,29 @@ def dispatch_shipment(request):
             order.status = Order.DISPATCHED
             order.time_dispatched = datetime.datetime.now()
             order.save()
+
+            # get all clinic managers for this clinic
+            clinic_managers = User.objects.filter(clinic=order.clinic)
+            # get all emails to send notifications to
+            emails = [clinic_manager.email for clinic_manager in clinic_managers]
+
+            # write message
+            email = EmailMessage(
+                'AS-P Order Dispatched',
+                render_to_string('order_dispatched.html', {
+                    'order': order,
+                }),
+                to=emails
+            )
+
+            # generate and attach shipping label
+            buffer = BytesIO()
+            generate_label(buffer, order.id)
+            pdf = buffer.getvalue()
+            buffer.close()
+            email.attach('shipping_label.pdf',pdf,'application/pdf')
+            
+            email.send()
         return HttpResponse("Successfully dispatched shipments.")
 
 def get_distance(route):

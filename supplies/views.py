@@ -30,9 +30,11 @@ def supplies(request):
     return render(request, 'supplies/index.html', context)
 
 def get_cart_weight(items):
-    cart_weight = ORDER_OVERHEAD_WEIGHT
-    for item in items:
-        cart_weight += Item.objects.get(pk=item).shipping_weight_grams * items[item]
+    cart_weight = 0
+    if items:
+        cart_weight += ORDER_OVERHEAD_WEIGHT
+        for item in items:
+            cart_weight += Item.objects.get(pk=item).shipping_weight_grams * items[item]
     return cart_weight
 
 def add_to_cart(request):
@@ -76,7 +78,7 @@ def flush_session(request):
 @clinic_manager_required
 def cart(request):
     cart_items = []
-    cart_weight = None
+    cart_weight = 0
     # request.session["cart"]["items"] is a dictionary of item_id -> quantity
     if "cart" in request.session and "items" in request.session["cart"]:
         cart_weight = get_cart_weight(request.session["cart"]["items"])
