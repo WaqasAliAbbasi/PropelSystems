@@ -25,5 +25,6 @@ urlpatterns = [
     path('warehouse/', include('warehouse.urls')),
     path('auth/', include('authentication.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('orders/', include('orders.urls'))
+    path('orders/', include('orders.urls')),
+    path('userprofile/', include('userprofile.urls'))
 ]

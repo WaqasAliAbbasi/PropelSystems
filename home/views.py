@@ -5,20 +5,25 @@ from .models import User
 access = {
     User.ADMIN: [
         ["Admin","/admin"],
-        ["Invite","/auth/invite"]
+        ["Invite","/auth/invite"],
+        ["Profile", "/userprofile"]
     ],
     User.CLINIC_MANAGER: [
         ["Supplies","/supplies"],
-        ["Orders","/orders"]
+        ["Orders","/orders"],
+        ["Profile", "/userprofile"]
     ],
     User.WAREHOUSE_PERSONNEL: [
         ["Warehouse","/warehouse"],
+        ["Profile", "/userprofile"]
     ],
     User.DISPATCHER: [
         ["Dispatch","/dispatch"],
+        ["Profile", "/userprofile"]
     ],
     User.HOSPITAL_AUTHORITY: [
-        ["Admin","/admin"]
+        ["Admin","/admin"],
+        ["Profile", "/userprofile"]
     ],
 }
 
