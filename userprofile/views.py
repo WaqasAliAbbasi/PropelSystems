@@ -28,11 +28,13 @@ def edit_profile(request):
     form = EditProfileForm(request.POST or None, initial={'first_name':user.first_name, 'last_name':user.last_name, 'email':user.email})
     if request.method == 'POST':
         if form.is_valid():
-
-
             user.first_name = request.POST['first_name']
             user.last_name = request.POST['last_name']
-            user.save()
+            if user.email != request.POST['email']:
+                user.email = request.POST['email']
+                user.save(update_fields=["first_name", "last_name","email"])
+            else:
+                user.save(update_fields=["first_name", "last_name"])
             return redirect('/userprofile')
 
     context = {
