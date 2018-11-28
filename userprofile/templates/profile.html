@@ -1,8 +1,17 @@
 {% extends 'home/base.html' %}
 
 {% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-8">
+      <br>
+      <h1 class="mt-2">Profile</h1>
+      <hr class="mt-0 mb-4">
   <h2>Welcome, <small>{{ user.first_name }}</small> <small>{{ user.last_name }}</small> !</h2>
   <p>Your email address: {{ user.email }}</p>
   <p>Edit your details <a href="{% url 'userprofile:edit_profile' %}">here</a></p>
   <p>Change your password <a href="{% url 'userprofile:change_password' %}">here</a></p>
+</div>
+</div>
+</div>
 {% endblock %}
