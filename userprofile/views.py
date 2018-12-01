@@ -3,9 +3,14 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render, redirect
 from .forms import EditProfileForm
+from home.views import access
 
 def profilepage(request):
-    return render(request, 'profile.html')  
+    context = {
+        'sidebar': access[request.user.role],
+        'user': request.user,
+    }
+    return render(request, 'profile.html', context)
 
 def change_password(request):
     if request.method == 'POST':
@@ -20,7 +25,9 @@ def change_password(request):
     else:
         form = PasswordChangeForm(request.user)
     return render(request, 'changepassword.html', {
-        'form': form
+        'form': form,
+        'sidebar': access[request.user.role],
+        'user': request.user,
     })
 
 def edit_profile(request):
@@ -38,8 +45,9 @@ def edit_profile(request):
             return redirect('/userprofile')
 
     context = {
-        "form": form
+        "form": form,
+        'sidebar': access[request.user.role],
+        'user': request.user,
     }
 
     return render(request, "edit_profile.html", context)
-

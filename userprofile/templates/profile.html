@@ -7,10 +7,10 @@
       <br>
       <h1 class="mt-2">Profile</h1>
       <hr class="mt-0 mb-4">
-  <h2>Welcome, <small>{{ user.first_name }}</small> <small>{{ user.last_name }}</small> !</h2>
+  <h4>Welcome, {{ user.first_name }} {{ user.last_name }}!</h4>
   <p>Your email address: {{ user.email }}</p>
-  <p>Edit your details <a href="{% url 'userprofile:edit_profile' %}">here</a></p>
-  <p>Change your password <a href="{% url 'userprofile:change_password' %}">here</a></p>
+  <p><a href="{% url 'userprofile:edit_profile' %}">Edit Profile Details</a></p>
+  <p><a href="{% url 'userprofile:change_password' %}">Change Password</a></p>
 </div>
 </div>
 </div>

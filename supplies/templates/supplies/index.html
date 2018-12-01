@@ -96,7 +96,7 @@
                     </ul>
                   </div>
                   <div class="mdl-cell mdl-cell--6-col" align="center">
-                    <img src={{ item.image.url }} width=250 />
+                    <img src={{ item.image.url }} width=220 />
                   </div>
               </td>
               <td>
@@ -137,34 +137,56 @@
   </div>
 </div>
 <script>
-  $('#select-category').on('change', function() {
-    var loc = location.href;
-    if (loc.indexOf("?") !== -1) {
-      loc = loc.slice(0, loc.indexOf("?"))
-    }
-    loc += "?category_id=" + $(this).val();
-    window.location = loc;
-		return false;
-  });
+$('#select-category').on('change', function() {
+  var loc = location.href;
+  if (loc.indexOf('?') !== -1) {
+    loc = loc.slice(0, loc.indexOf('?'));
+  }
+  loc += '?category_id=' + $(this).val();
+  window.location = loc;
+  return false;
+});
 
-  $('.modal-button').on('click', function() {
-    $("#modal-body").html($(this).parent().find(".additional-details").clone().show());
-	});
+$('.modal-button').on('click', function() {
+  $('#modal-body').html(
+    $(this)
+      .parent()
+      .find('.additional-details')
+      .clone()
+      .show()
+  );
+});
 
-  $('.add-cart').on('click', function() {
-    var url = location.href;
-    if (url.indexOf("?") !== -1) {
-      url = url.slice(0, url.indexOf("?"))
-    }
-    const itemID = $(this).parent().parent().find(".item-id").text();
-    const quantity = $(this).parent().parent().find(".quantity").val();
-    if ((isNaN(quantity) || isNaN(parseInt(quantity)))) {
-      alert("Invalid Quantity")
-      return false
-    }
-    $.post( url + 'add_to_cart', { csrfmiddlewaretoken: '{{ csrf_token }}', "itemID": itemID, "quantity": quantity }, function( response ) {
+$('.add-cart').on('click', function() {
+  var url = location.href;
+  if (url.indexOf('?') !== -1) {
+    url = url.slice(0, url.indexOf('?'));
+  }
+  const itemID = $(this)
+    .parent()
+    .parent()
+    .find('.item-id')
+    .text();
+  const quantity = $(this)
+    .parent()
+    .parent()
+    .find('.quantity')
+    .val();
+  if (isNaN(quantity) || isNaN(parseInt(quantity))) {
+    alert('Invalid Quantity');
+    return false;
+  }
+  $.post(
+    url + 'add_to_cart',
+    {
+      csrfmiddlewaretoken: '{{ csrf_token }}',
+      itemID: itemID,
+      quantity: quantity
+    },
+    function(response) {
       alert(response);
-    });
-	});
+    }
+  );
+});
 </script>
 {% endblock %}
