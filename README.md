@@ -12,13 +12,14 @@
 * Install dependencies by `pipenv install --ignore-pipfile`
 * Start web server by `python manage.py runserver`
 * Access web app at [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
-* Access admin at [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin) with following credentials:
-  * Username: `admin@propelsystems.com`
-  * Password: `propel123`
+* Access admin at [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)
 * When you are done, exit virtual environment by `exit`
 
 ### User Accounts
 
+* Admin
+  * Username: `admin@propelsystems.com`
+  * Password: `propel123`
 * Clinic Manager
   * Username: `waqas.abbasi@outlook.com`
   * Password: `propel123`
@@ -28,14 +29,6 @@
 * Dispatcher
   * Username: `piyushjha0999@gmail.com`
   * Password: `propel123`
-
-### How to test elaboration
-
-* Add supply items through [http://localhost:8000/admin/home/item/](http://localhost:8000/admin/home/item/)
-* Place any order through [http://127.0.0.1:8000/supplies](http://127.0.0.1:8000/supplies)
-* Order status is now `Queued for Processing` so it won't show up in [http://127.0.0.1:8000/dispatch](http://127.0.0.1:8000/dispatch)
-* Go to [http://localhost:8000/admin/home/order/](http://localhost:8000/admin/home/order/), find your order and change status to `Queued for Dispatch`
-* Download Itinerary or Dispatch Shipment through [http://127.0.0.1:8000/dispatch](http://127.0.0.1:8000/dispatch)
 
 ### How to change models
 
